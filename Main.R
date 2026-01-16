@@ -1,7 +1,15 @@
-library (here)
+library(here)
+library(ProjectTemplate)
+library(tidyverse)
+library(tidymodels)
+library(readr)
+library(skimr)
+library(glmnet)
+library(pROC)
+library(yardstick)
+library(pins)
 
-base_dir <- here::here("MAS8600")
-data_dir <- file.path(
-  base_dir,
-  "MAS8600_MAS8505_02_main_report_FutureLearn_MOOC_Dataset"
-)
+base_dir <- here::here()
+data_dir <- file.path(base_dir, "MAS8600_Dataset")
+here::here()
+list.files(data_dir)
