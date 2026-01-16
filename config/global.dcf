@@ -1,0 +1,9 @@
+data_loading: FALSE
+data_loading_header: TRUE
+cache_loading: TRUE
+recursive_loading: FALSE
+munging: TRUE
+logging: TRUE
+load_libraries: TRUE
+libraries: tidyverse, tidymodels, lubridate, skimr, glmnet, pROC, randomForest, rpart, rpart.plot, here, tools
+as_factors: FALSE
