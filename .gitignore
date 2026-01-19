@@ -1,4 +1,11 @@
-.Rproj.user
+.Rproj.user/
 .Rhistory
 .RData
 .Ruserdata
+*.Rproj
+
+cache/
+tmp/
+temp/
+*.rds
+*.RDS
