@@ -5,5 +5,5 @@ recursive_loading: FALSE
 munging: TRUE
 logging: TRUE
 load_libraries: TRUE
-libraries: tidyverse, tidymodels, lubridate, skimr, pROC, rpart, rpart.plot, here, tools
+libraries: tidyverse, tidymodels, lubridate, skimr, glmnet, pROC, randomForest, rpart, rpart.plot, here, tools
 as_factors: FALSE
