@@ -136,9 +136,6 @@ null_column_report <- bind_rows(
 
 print(null_column_report)
 
-# ============================================================================
-# Key column presence analysis
-# ============================================================================
 KEY_COLUMNS <- c("learner_id", "step_id", "question_id")
 
 check_key_presence <- function(table_name) {
@@ -150,14 +147,14 @@ check_key_presence <- function(table_name) {
   )
 }
 
-key_presence <- inventory %>%
-  mutate(
-    bind_rows(lapply(object_name, check_key_presence))
-  ) %>%
+key_flags <- bind_rows(lapply(inventory$object_name, check_key_presence))
+
+key_presence <- bind_cols(inventory, key_flags) %>%
   select(run_id, table_type, object_name, starts_with("has_")) %>%
   arrange(run_id, table_type)
 
 print(head(key_presence, 30))
+
 
 save_cache <- function(obj, filename) {
   saveRDS(obj, here::here("cache", filename))
