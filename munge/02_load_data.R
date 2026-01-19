@@ -1,16 +1,17 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 library(dplyr)
 library(readr)
 library(tools)
 =======
+=======
+source("munge/01_libraries.R")
+>>>>>>> 2317e90 (added data understanding)
 root_dir <- here::here()
 data_dir <- file.path(root_dir, "MAS8600_Dataset")
 
 if (!dir.exists(data_dir)) {
-  stop(sprintf(
-    "Data directory not found:\n  %s\n",
-    data_dir
-  ))
+  stop(sprintf("Data directory not found:\n  %s", data_dir))
 }
 >>>>>>> b204572 (fixed git ignore and refactored code)
 
@@ -25,6 +26,7 @@ csv_files <- list.files(
   recursive = TRUE,
   full.names = TRUE
 )
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 # Remove macOS artifacts if present
@@ -59,82 +61,90 @@ print(head(inventory[order(-inventory$n_rows), ], 10))
 cache("data_list")
 cache("inventory")
 =======
+=======
+
+>>>>>>> 2317e90 (added data understanding)
 csv_paths <- csv_paths[!grepl("__MACOSX|/\\._", csv_paths)]
+csv_paths <- sort(csv_paths)
 
 if (length(csv_paths) == 0) {
   stop(sprintf("No CSV files found in:\n  %s", data_dir))
 }
 
-datasets <- lapply(csv_paths, readr::read_csv, show_col_types = FALSE)
-names(datasets) <- make.names(
+tables <- lapply(csv_paths, readr::read_csv, show_col_types = FALSE)
+
+names(tables) <- make.names(
   tools::file_path_sans_ext(basename(csv_paths)),
   unique = TRUE
 )
 
-#metadata index
-dataset_metadata <- data.frame(
-  name      = names(datasets),
-  path      = csv_paths,
-  rows      = vapply(datasets, nrow, integer(1)),
-  cols      = vapply(datasets, ncol, integer(1)),
+if (anyDuplicated(names(tables)) > 0) {
+  stop("Name collision detected in table names.")
+}
+
+table_index <- data.frame(
+  object_name = names(tables),
+  file_path   = csv_paths,
+  n_rows      = vapply(tables, nrow, integer(1)),
+  n_cols      = vapply(tables, ncol, integer(1)),
   stringsAsFactors = FALSE
 )
 
-message(sprintf("Loaded %d datasets", nrow(dataset_metadata)))
-print(head(dataset_metadata[order(-dataset_metadata$rows), ], 10))
+message(sprintf("Loaded %d tables.", nrow(table_index)))
+print(head(table_index[order(-table_index$n_rows), ], 10))
 
-schemas <- lapply(datasets, function(df) {
-  num_rows <- nrow(df)
+schema <- lapply(tables, function(tbl) {
+  n <- nrow(tbl)
   data.frame(
-    field       = names(df),
-    type        = vapply(df, function(col) class(col)[1], character(1)),
-    null_count  = vapply(df, function(col) sum(is.na(col)), integer(1)),
-    null_ratio  = if (num_rows == 0) NA_real_ else vapply(df, function(col) mean(is.na(col)), numeric(1)),
+    variable    = names(tbl),
+    class       = vapply(tbl, function(x) class(x)[1], character(1)),
+    missing     = vapply(tbl, function(x) sum(is.na(x)), integer(1)),
+    missing_pct = if (n == 0) NA_real_ else vapply(tbl, function(x) mean(is.na(x)), numeric(1)),
     stringsAsFactors = FALSE
   )
 })
 
-# Null data
-null_stats <- do.call(
+missing_report <- do.call(
   rbind,
-  lapply(names(schemas), function(ds_name) {
-    schema <- schemas[[ds_name]]
+  lapply(names(schema), function(table_name) {
+    s <- schema[[table_name]]
     data.frame(
-      dataset           = ds_name,
-      total_fields      = nrow(schema),
-      fields_with_nulls = sum(schema$null_count > 0),
-      max_null_ratio    = if (all(is.na(schema$null_ratio))) NA_real_ else max(schema$null_ratio, na.rm = TRUE),
+      table             = table_name,
+      vars              = nrow(s),
+      vars_with_missing = sum(s$missing > 0),
+      max_missing_pct   = if (all(is.na(s$missing_pct))) NA_real_ else max(s$missing_pct, na.rm = TRUE),
       stringsAsFactors  = FALSE
     )
   })
 )
-null_stats <- null_stats[order(-null_stats$max_null_ratio), ]
 
-message("\nNull Value Analysis:")
-print(head(null_stats, 10))
+missing_report <- missing_report[order(-missing_report$max_missing_pct), ]
+message("\nMissingness Overview:")
+print(head(missing_report, 10))
 
-event_logs <- grep(
+event_tables <- grep(
   "(step\\.activity|question\\.response|video\\.stats)",
-  names(datasets),
+  names(tables),
   value = TRUE
 )
 
-user_data <- grep(
+learner_tables <- grep(
   "(enrolments|archetype\\.survey|leaving\\.survey|weekly\\.sentiment\\.survey)",
-  names(datasets),
+  names(tables),
   value = TRUE
 )
 
-team_data <- grep("(team\\.members)", names(datasets), value = TRUE)
+team_tables <- grep("(team\\.members)", names(tables), value = TRUE)
 
-message("\nDataset Categories:")
-message(sprintf("  Event logs: %d", length(event_logs)))
-message(sprintf("  User data: %d", length(user_data)))
-message(sprintf("  Team data: %d", length(team_data)))
+message("\nTable Classification:")
+message(sprintf("Event tables: %d", length(event_tables)))
+message(sprintf("Learner/survey tables: %d", length(learner_tables)))
+message(sprintf("Team tables: %d", length(team_tables)))
 
 cache_dir <- here::here("cache")
 dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
 
+<<<<<<< HEAD
 saveRDS(datasets,         file.path(cache_dir, "datasets.rds"))
 saveRDS(dataset_metadata, file.path(cache_dir, "metadata.rds"))
 saveRDS(schemas,          file.path(cache_dir, "schemas.rds"))
@@ -143,3 +153,12 @@ saveRDS(event_logs,       file.path(cache_dir, "event_logs.rds"))
 saveRDS(user_data,        file.path(cache_dir, "user_data.rds"))
 saveRDS(team_data,        file.path(cache_dir, "team_data.rds"))
 >>>>>>> b204572 (fixed git ignore and refactored code)
+=======
+saveRDS(tables,          file.path(cache_dir, "tables.rds"))
+saveRDS(table_index,     file.path(cache_dir, "table_index.rds"))
+saveRDS(schema,          file.path(cache_dir, "schema.rds"))
+saveRDS(missing_report,  file.path(cache_dir, "missing_report.rds"))
+saveRDS(event_tables,    file.path(cache_dir, "event_tables.rds"))
+saveRDS(learner_tables,  file.path(cache_dir, "learner_tables.rds"))
+saveRDS(team_tables,     file.path(cache_dir, "team_tables.rds"))
+>>>>>>> 2317e90 (added data understanding)

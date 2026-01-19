@@ -5,5 +5,19 @@ recursive_loading: FALSE
 munging: TRUE
 logging: TRUE
 load_libraries: TRUE
+<<<<<<< HEAD
 libraries: tidyverse, tidymodels, lubridate, skimr, glmnet, pROC, randomForest, rpart, rpart.plot, here, tools
 as_factors: FALSE
+=======
+libraries: tidyverse, tidymodels, lubridate, skimr, pROC, rpart, rpart.plot, here, tools
+as_factors: FALSE
+version: 0.11.1
+data_ignore:
+logging_level: INFO
+tables_type: data_frame
+attach_internal_libraries: TRUE
+cache_loaded_data: FALSE
+sticky_variables: NONE
+underscore_variables: FALSE
+cache_file_format: RData
+>>>>>>> 2317e90 (added data understanding)
