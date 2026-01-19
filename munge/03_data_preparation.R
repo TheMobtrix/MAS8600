@@ -18,6 +18,7 @@ learner_spine <- learner_spine %>%
   )
 
 learner_spine <- learner_spine %>%
+  
   mutate(
     completed = if_else(!is.na(fully_participated_at), 1, 0)
   )
